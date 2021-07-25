@@ -1,0 +1,23 @@
+{
+    "environments":
+    [
+        {
+            "name":"environment1",
+            "address":"12.345.67.890",
+            "username":"myusername",
+            "port":"99999",
+            "path":"path/to/target/directory",
+            "identity":"path/to/rsa/private/key",
+            "siteurl":"example1.com"
+        }, 
+        {
+            "name":"environment2",
+            "address":"12.345.67.899",
+            "username":"myusername",
+            "port":"99999",
+            "path":"path/to/target/directory",
+            "identity":"path/to/rsa/private/key",
+            "siteurl":"example2.com"
+        }
+    ]
+}
