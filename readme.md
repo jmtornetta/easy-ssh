@@ -2,6 +2,7 @@
 The goal for easy-ssh is to make using common ssh commands, identities, ssh-agent, and environments more convenient and less messy. Predefine your common ssh environments with your private key identities, run local functions easily in your remote environment, and upload and download directories more quickly with rsync.
 
 # Future
+1. Test sshRun function with different commands and arguments to make more widespread
 1. Include 'js' and 'rsync' as submodules or replace with native tools (scp,grep)
 2. Make read user prompts optional with parameters (quiet mode)
 3. Ensure specifying environment port optional, so if not specified in environments.json the default port is used
