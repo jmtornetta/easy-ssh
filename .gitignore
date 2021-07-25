@@ -1,4 +1,5 @@
 # Ignore config files
+**/config.json
 **/environments.json
 # Untracked extensions
 *.log

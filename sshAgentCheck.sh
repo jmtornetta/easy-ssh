@@ -1,38 +1,38 @@
 #!/bin/bash
-# Deprecated:
-##eval `ssh-agent -s` # Start ssh-agent to limit pw re-entry per https://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent
-##ssh-add "$envIdentity" # Loading the selected key specified in the environments.json
+# Credit: https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/working-with-ssh-key-passphrases#platform-windows
+# Updated: Added trap to kill ssh-agent for security and added default sshAgentTime so identity expires after a time
 
-# SSH Agent check or start
-printf "Checking if ssh-agent is running... \n"
-function sshAddIdentity {
-    if [[ "$envIdentity" ]];then
-        # Identity filepath is specified already.
-        echo ""&>/dev/null
-    else
-        read -p "Environment identity not set. Specify SSH identity file path: " envIdentity
-    fi
-    # Loading the selected key for 4 hours, kills ssh-agent on exit
-    ssh-add -t 4h "$envIdentity" \
+SRC=$(realpath "${BASH_SOURCE[0]}")
+DIR="$(dirname "$SRC")"
+env=~/.ssh/agent.env
+
+# Check to ensure jq and rsync is installed
+source "$DIR/tests/checkJq.sh"
+
+# Load environments.json config file and store as variable
+source "$DIR/vars/configToVars"
+
+function agentLoadEnv { test -r "$env" && source "$env" >| /dev/null ; }
+
+function agentStart {
+    (umask 077; ssh-agent >| "$env")
+    source "$env" >| /dev/null ; }
+
+function agentAddIdentity {
+    ssh-add -t $sshAgentTime "$envIdentity" \
     && trap "ssh-agent -k" exit \
-    && printf "SSH identity added for 2 hours. \n"
-}
-ssh-add -l &>/dev/null
-if [ "$?" == 2 ]; then
-    # If no existing fingerprints, then load any stored agent connection info if available.
-    test -r ~/.ssh-agent && \
-       source ~/.ssh-agent >/dev/null
-        # If there is a stored ssh-agent, load the agent process and try listing ssh-agent fingerprints again.
-    ssh-add -l &>/dev/null
-    if [ "$?" == 2 ]; then
-        # If the stored ssh-agent won't start or doesn't exist, create a new ssh-agent and store in private file
-        (umask 066; ssh-agent > ~/.ssh-agent) \
-        && printf "Started ssh-agent. \n"
-        source ~/.ssh-agent >/dev/null \
-        && sshAddIdentity
-    fi
-elif [ "$?" == 1 ]; then
-    sshAddIdentity
-else
-    printf "Confirmed ssh-agent with an identity is running. \n"
+    && printf "SSH identity added for $sshAgentTime. \n" ; }
+
+agentLoadEnv
+
+# agentRunState: 0=agent running w/ key; 1=agent w/o key; 2= agent not running
+agentRunState=$(ssh-add -l >| /dev/null 2>&1; echo $?)
+
+if [ ! "$SSH_AUTH_SOCK" ] || [ $agentRunState = 2 ]; then
+    agentStart
+    agentAddIdentity
+elif [ "$SSH_AUTH_SOCK" ] && [ $agentRunState = 1 ]; then
+    agentAddIdentity
 fi
+
+unset env

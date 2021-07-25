@@ -1,4 +1,6 @@
 {
+    "defaultIdentity":"path/to/rsa/private/key",
+    "sshAgentTime":"4h", 
     "environments":
     [
         {
