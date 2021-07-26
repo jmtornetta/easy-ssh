@@ -15,7 +15,7 @@ for i in "${!environmentsNames[@]}"; do
     envNumbers+=($i) # Create array of environment numbers so it can be checked against later
     printf "%s\t%s\n" "$i" "${environmentsNames[$i]}"  # List environment names from environments.json file
 done
-unset chosenEnv
+chosenEnv=""
 for i in 1 2 3; do # Three attempts to select the right environment
     printf '\n'
     read -p "Enter the number of the environment to work from. Use staging by default. " chosenEnv
@@ -40,8 +40,16 @@ source "$DIR/vars/envDetails"
 source "$DIR/sshAgentCheck.sh"
 
 # Load action functions
-for file in "$DIR/actions/*"
-    do source $file;
-done
+# source "$DIR/actions/sshRun.sh"
+# source "$DIR/actions/sshUpload.sh"
+# source "$DIR/actions/sshDownload.sh"
+# Or try this...
+# for file find "$DIR/actions" -name "*.sh" | while read FILE
+#     do source "$FILE"
+# done
+
+while IFS=  read -r -d $'\0'; do
+    source "$REPLY"
+done < <(find "$DIR/actions" -name "*.sh" -print0)
 
 # Call an action function to do something
