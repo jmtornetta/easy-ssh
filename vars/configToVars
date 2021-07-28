@@ -1,5 +1,5 @@
 #!/bin/bash
-configJSON="$(jq -r '.' "$DIR/config.json")" # Returns all environment data
+configJSON=$(jq '.' "$DIR/config.json") # Returns all environment data
 defaultIdentity=$(jq -r '.defaultIdentity' <<< "${configJSON}")
 sshAgentTime=$(jq -r '.sshAgentTime' <<< "${configJSON}")
-environmentsNames=($(jq -r '.environments[] | .name' <<< "${configJSON}")) # Returns an array of environment names
+environmentsNames=($(jq -r '.environments[].name' <<< "${configJSON}" | tr -d '\r')) # Returns an array of environment names
