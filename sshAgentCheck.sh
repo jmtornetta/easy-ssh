@@ -4,7 +4,7 @@
 
 SRC=$(realpath "${BASH_SOURCE[0]}")
 DIR="$(dirname "$SRC")"
-env=~/.ssh/agent.env
+env="$HOME/.ssh/agent.env"
 
 # Check to ensure jq and rsync is installed
 source "$DIR/tests/checkJq.sh"
