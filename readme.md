@@ -2,7 +2,7 @@
 The goal for easy-ssh is to make using common ssh commands, identities, ssh-agent, and environments more convenient and less messy. Predefine your common ssh environments with your private key identities, run local functions easily in your remote environment, and upload and download directories more quickly with rsync.
 
 # Getting Started
-1. Install **jq** before using easy-ssh. See https://github.com/stedolan/jq/releases.
+1. Install **jq** before using easy-ssh (`sudo apt-get install jq`). See https://github.com/stedolan/jq/releases.
 2. Copy and rename **example-config.json** to **config.json**.
 3. Add your SSH credentials to the **config.json** file. Adjust read/write/execute file permissions as needed. Keep this file ignored in **.gitignore**!
 ## sshConnect

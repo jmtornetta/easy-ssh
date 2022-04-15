@@ -12,26 +12,28 @@ source "$DIR/tests/checkJq.sh"
 # Load environments.json config file and store as variable
 source "$DIR/vars/configToVars"
 
-function agentLoadEnv { test -r "$env" && source "$env" >| /dev/null ; }
+# shellcheck source=/dev/null
+function agentLoadEnv { test -r "$env" && source "$env" >| /dev/null ; } 
 
 function agentStart {
     (umask 077; ssh-agent >| "$env")
+    # shellcheck source=/dev/null
     source "$env" >| /dev/null ; }
 
 function agentAddIdentity {
-    ssh-add -t $sshAgentTime "$envIdentity" \
+    ssh-add -t "$sshAgentTime" "$envIdentity" \
     && trap "ssh-agent -k" exit \
-    && printf "SSH identity added for $sshAgentTime. \n" ; }
+    && printf "\n%s\n" "SSH identity added for $sshAgentTime." ; }
 
 agentLoadEnv
 
 # agentRunState: 0=agent running w/ key; 1=agent w/o key; 2= agent not running
 agentRunState=$(ssh-add -l >| /dev/null 2>&1; echo $?)
 
-if [ ! "$SSH_AUTH_SOCK" ] || [ $agentRunState = 2 ]; then
+if [ ! "$SSH_AUTH_SOCK" ] || [ "$agentRunState" = 2 ]; then
     agentStart
     agentAddIdentity
-elif [ "$SSH_AUTH_SOCK" ] && [ $agentRunState = 1 ]; then
+elif [ "$SSH_AUTH_SOCK" ] && [ "$agentRunState" = 1 ]; then
     agentAddIdentity
 fi
 

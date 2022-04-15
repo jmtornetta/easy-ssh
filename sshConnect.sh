@@ -88,7 +88,7 @@ EOF
 
         # check required params and arguments
         #[[ -z "${param-}" ]] && die "Missing required parameter: param" # if parameter is required
-        [[ ${#args[@]} -eq 0 ]] && die "Missing script arguments" # if argumment is required
+        #[[ ${#args[@]} -eq 0 ]] && die "Missing script arguments" # if argumment is required
 
         return 0
     }
@@ -126,6 +126,7 @@ sshConnect () {
     # done
 
     while IFS=  read -r -d $'\0'; do
+        # shellcheck source=/dev/null
         source "$REPLY"
     done < <(find "$DIR/actions" -name "*.sh" -print0)
 
