@@ -1,15 +1,15 @@
 #!/bin/bash
-if [ $chosenEnv ]; then
-    envName=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].name' <<< "${configJSON}")
-    envDomain=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].siteurl' <<< "${configJSON}")
-    envUsername=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].username' <<< "${configJSON}")
-    envAddress=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].address' <<< "${configJSON}")
-    envPort=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].port' <<< "${configJSON}")
-    envIdentity=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].identity' <<< "${configJSON}")
+if [ "$chosenEnv" ]; then
+    envName=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].name' <<< "${configJSON}")
+    envDomain=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].siteurl' <<< "${configJSON}")
+    envUsername=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].username' <<< "${configJSON}")
+    envAddress=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].address' <<< "${configJSON}")
+    envPort=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].port' <<< "${configJSON}")
+    envIdentity=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].identity' <<< "${configJSON}")
     envLogin="$envUsername@$envAddress"
-    envPath=$(jq -r --argjson chosenEnv $chosenEnv '.environments[$chosenEnv].path' <<< "${configJSON}")
+    envPath=$(jq -r --argjson chosenEnv "$chosenEnv" '.environments[$chosenEnv].path' <<< "${configJSON}")
 else 
-    printf "Environment not selected or defined."
+    printf "\n%s\n" "Environment not selected or defined."
     sleep 3
     exit 1
 fi
