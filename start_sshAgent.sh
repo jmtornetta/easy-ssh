@@ -1,4 +1,5 @@
 #!/bin/bash
+# About: Starts ssh-agent with an expiry and loads previous agent environment if available.
 # Credit: https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/working-with-ssh-key-passphrases#platform-windows
 
 start() {
@@ -8,15 +9,19 @@ start() {
     declare -r agentEnv="${3:-$HOME/.ssh/agent.env}"
     declare agentRunState
 
-    function load_agent { test -r "$agentEnv" && source "$agentEnv" >| /dev/null ; }
+    function load_agent { 
+        # shellcheck source=/dev/null
+        test -r "$agentEnv" && source "$agentEnv" >| /dev/null ; 
+        }
 
     function launch_agent {
         (umask 077; ssh-agent >| "$agentEnv")
+        # shellcheck source=/dev/null
         source "$agentEnv" >| /dev/null
     }
 
     function add_agentIdentity {
-        ssh-add -t $sshAgentTime "$sshKey" || { echo "Error: Could not add identity." && return 1 ; }
+        ssh-add -t "$sshAgentTime" "$sshKey" || { echo "Error: Could not add identity." && return 1 ; }
         trap "ssh-agent -k" EXIT
         echo "SSH identity added for $sshAgentTime." 
     }
