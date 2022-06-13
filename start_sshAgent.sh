@@ -4,9 +4,10 @@
 
 start() {
     set -Eeuo pipefail # need to disable at bottom of script for .bashrc sourcing
-    declare -r sshKey="${1:-$HOME/.ssh/id_rsa}"
-    declare -r sshAgentTime="${2:-4h}"
-    declare -r agentEnv="${3:-$HOME/.ssh/agent.env}"
+    declare -r sshDir="${4:-$HOME/.ssh}" # declare first because dependencies below, but last argument because least likely to be changed
+    declare -r sshKey="${1:-$sshDir/id_rsa}" # the key for agent to load
+    declare -r agentEnv="${2:-$sshDir/agent.env}" # the agent environment location
+    declare -r sshAgentTime="${3:-4h}" # time before key revalidation
     declare agentRunState
 
     function load_agent { 
