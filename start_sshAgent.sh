@@ -3,7 +3,7 @@
 # Credit: https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/working-with-ssh-key-passphrases#platform-windows
 
 start() {
-    set -Eeuo pipefail # need to disable at bottom of script for .bashrc sourcing
+    # set -Eeuo pipefail # Posterity: Removed for .bashrc sourcing so terminal does not immediately close if errors.
     declare -r sshDir="${4:-$HOME/.ssh}" # declare first because dependencies below, but last argument because least likely to be changed
     declare -r sshKey="${1:-$sshDir/id_rsa}" # the key for agent to load
     declare -r agentEnv="${2:-$sshDir/agent.env}" # the agent environment location
@@ -12,7 +12,7 @@ start() {
 
     function load_agent { 
         # shellcheck source=/dev/null
-        test -r "$agentEnv" && source "$agentEnv" >| /dev/null ; 
+        [ -r "$agentEnv" ] && source "$agentEnv" >| /dev/null ; 
         }
 
     function launch_agent {
@@ -27,7 +27,7 @@ start() {
         echo "SSH identity added for $sshAgentTime." 
     }
 
-    load_agent
+    load_agent || true # If cannot load agent, still return true to prevent errors
     agentRunState=$(ssh-add -l >| /dev/null 2>&1; echo $?)
     #^ agentRunState: 0=agent running w/ key; 1=agent w/o key; 2= agent not running
 
@@ -37,7 +37,5 @@ start() {
     elif [ "$SSH_AUTH_SOCK" ] && [ "$agentRunState" = 1 ]; then
         add_agentIdentity
     fi
-
-    set +Eeuo pipefail # unset so that script can be sourced from within .bashrc
 }
 start "$@"
